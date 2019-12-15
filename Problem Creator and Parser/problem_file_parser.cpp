@@ -17,7 +17,7 @@ From a position, you can only move
 
 const int sizeOfGrid=12; // Size of Grid
 int x = -1; // 'x' is a variable for the each grid cell which is always modifiable.
-
+int grid[sizeOfGrid][sizeOfGrid];
 
 /////////////////////////////////////////////////////////////////////////////////
 //          GridStatus() displays values in every cell.                        //
@@ -33,7 +33,7 @@ void GridStatus(int grid[][sizeOfGrid]){
         output_file<<"[";
         for (int j = 0; j < sizeOfGrid; j++){
             if(output_file.is_open()){
-                if (j != sizeOfGrid-1) output_file << grid[i][j]<<", ";
+                if (j != sizeOfGrid-1) output_file << grid[i][j]<<",";
                 else output_file<< grid[i][j];
             }
         }
@@ -67,6 +67,7 @@ void fileParser(){
                 if(line.at(b_pos+2) == ',' && line.at(e_pos-2) == ',') {
                     x_cord = line.at(b_pos+1) -48; y_cord = line.at(e_pos-1) -48;
                     cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                    grid[x_cord][y_cord] = 1;
                 }
                 else if(line.at(b_pos+3) == ',' && line.at(e_pos-3) == ','){
                     string data="";
@@ -78,6 +79,7 @@ void fileParser(){
                     data += line.at(b_pos+5);
                     istringstream(data) >> y_cord;
                     cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                    grid[x_cord][y_cord] = 1;
                 }
                 else if(line.at(b_pos+3) == ',' && line.at(e_pos-2) == ','){
                     string data="";
@@ -88,6 +90,7 @@ void fileParser(){
                     data += line.at(b_pos+4);
                     istringstream(data) >> y_cord;
                     cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                    grid[x_cord][y_cord] = 1;
                 }
                 else if(line.at(b_pos+2) == ',' && line.at(e_pos-3) == ','){
                     string data="";
@@ -98,6 +101,7 @@ void fileParser(){
                     data += line.at(b_pos+4);
                     istringstream(data) >> y_cord;
                     cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                    grid[x_cord][y_cord] = 1;
                 }
                 ++b_pos; ++e_pos;
                 if (e_pos >= line.length()) key_coordinates=1;
@@ -144,12 +148,11 @@ void fileParser(){
 }
 
 int main(){
-    int grid[sizeOfGrid][sizeOfGrid];
     for(int i=0;i<sizeOfGrid;i++)           //  <--- This loop creates the grid
         for(int j=0;j<sizeOfGrid;j++){      //  <-----------------
             grid[i][j] = x;                 //  <-----------------
         }                                   //  <--- Loop Ends
-    GridStatus(grid);                    // Instrustions for this function ('GridStatus()') provided above. 
     fileParser();
+    GridStatus(grid);                       // Instrustions for this function ('GridStatus()') provided above. 
     return 0;
 }
