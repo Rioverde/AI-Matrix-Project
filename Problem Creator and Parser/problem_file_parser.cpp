@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <cctype>
+#include <sstream>
 
 using namespace std;
 
@@ -56,18 +56,50 @@ void fileParser(){
     ifstream import_data("problem.txt");
     string line;
     int b_pos=0, e_pos=0, key_coordinates=0, key_problems=0, problem_in_digits=0;
-    char x_coordinate, y_coordinate;
     if(import_data.is_open()){
         while(!import_data.eof()) {
             getline(import_data, line);
-            cout << line << endl;
             while((line.length() != e_pos) || key_coordinates == 1) {
+                int x_cord, y_cord;
                 b_pos = line.find("(", b_pos);
                 e_pos = line.find(")", e_pos);
                 if(e_pos == -1 || b_pos == -1) break;
-                cout << "(" << line.at(b_pos+1) << ", " << line.at(e_pos-1) << ")" << endl;
-                ++b_pos;
-                ++e_pos;
+                if(line.at(b_pos+2) == ',' && line.at(e_pos-2) == ',') {
+                    x_cord = line.at(b_pos+1) -48; y_cord = line.at(e_pos-1) -48;
+                    cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                }
+                else if(line.at(b_pos+3) == ',' && line.at(e_pos-3) == ','){
+                    string data="";
+                    data += line.at(b_pos+1);
+                    data += line.at(b_pos+2);
+                    istringstream(data) >> x_cord;
+                    data.clear();
+                    data += line.at(b_pos+4);
+                    data += line.at(b_pos+5);
+                    istringstream(data) >> y_cord;
+                    cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                }
+                else if(line.at(b_pos+3) == ',' && line.at(e_pos-2) == ','){
+                    string data="";
+                    data += line.at(b_pos+1);
+                    data += line.at(b_pos+2);
+                    istringstream(data) >> x_cord;
+                    data.clear();
+                    data += line.at(b_pos+4);
+                    istringstream(data) >> y_cord;
+                    cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                }
+                else if(line.at(b_pos+2) == ',' && line.at(e_pos-3) == ','){
+                    string data="";
+                    data += line.at(b_pos+1);
+                    istringstream(data) >> x_cord;
+                    data.clear();
+                    data += line.at(b_pos+3);
+                    data += line.at(b_pos+4);
+                    istringstream(data) >> y_cord;
+                    cout << "(" << x_cord << ", " << y_cord << ")" << endl;
+                }
+                ++b_pos; ++e_pos;
                 if (e_pos >= line.length()) key_coordinates=1;
             }
             if(!key_problems){
