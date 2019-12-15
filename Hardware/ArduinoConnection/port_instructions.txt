@@ -1,0 +1,22 @@
+1. Create a file with '00-usb-<anyname>.rules' name in /etc/udev/rules.d/
+	EX: $touch /etc/udev/rules.d/00-usb-<yourdevice>.rules
+1.1. Add contents to your file:
+	ACTION=="add", ATTRS{idVendor}=="<yourvendorid>", ATTRS{idProduct}=="<yourproductid>", ENV{XAUTHORITY}="/home/<user>/.Xauthority", ENV{DISPLAY}=":0", OWNER="<user>", RUN+="/usr/local/bin/usb-<yourdevice>-in_udev"
+
+2. Create a file with 'usb-<anyname>-in_udev' name in /usr/local/bin/
+	EX: $touch /usr/local/bin/usb-<yourdevice>-in_udev
+2.1 Add contents to your file:
+	#!/bin/bash
+	/usr/local/bin/usb-<yourdevice>-in &
+
+3. Create a file with 'usb-<yourdevice>-in' name in /usr/local/bin/
+	EX: $touch /usr/local/bin/usb-<yourdevice>-in
+3.2 Copy executable arduino_port to /usr/bin
+3.3 Run command $sudo visudo
+	- After line 25 (i.e %sudo ALL=(ALL)) add this: username  ALL=(ALL) NOPASSWD: /home/username/my_script.sh
+3.4 Add contents to your file:
+	#!/bin/bash
+	sleep 1
+	/usr/bin/./arduino_port
+	echo 'Arduino port opened successfully'
+	
