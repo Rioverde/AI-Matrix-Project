@@ -14,11 +14,9 @@ From a position, you can only move
 - Right : 3 squares
 
 */
-
 const int sizeOfGrid=12; // Size of Grid
 int x = -1; // 'x' is a variable for the each grid cell which is always modifiable.
 int grid[sizeOfGrid][sizeOfGrid];
-
 /////////////////////////////////////////////////////////////////////////////////
 //          GridStatus() displays values in every cell.                        //
 //          Invoke a call to GridStatus if necessary, such as,                 //
@@ -50,7 +48,6 @@ void GridStatus(int grid[][sizeOfGrid]){
 //                                                                            //
 //============================================================================//
 //      DO NOT MAKE EDITS TO THE CODE BELOW THIS LINE UNLESS IMPROVING IT!    //
-
 
 void ParseCoordinates(){
     string line;
