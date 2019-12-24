@@ -1,9 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <cctype>
+#include <sstream>
 
-using namespace std;
 
 /*
 Grid Rules:
@@ -14,11 +13,9 @@ From a position, you can only move
 - Right : 3 squares
 
 */
-
-const int sizeOfGrid=12; // Size of Grid
+const int sizeOfGrid=8; // Size of Grid
 int x = -1; // 'x' is a variable for the each grid cell which is always modifiable.
-
-
+int grid[sizeOfGrid][sizeOfGrid];
 /////////////////////////////////////////////////////////////////////////////////
 //          GridStatus() displays values in every cell.                        //
 //          Invoke a call to GridStatus if necessary, such as,                 //
@@ -28,23 +25,22 @@ int x = -1; // 'x' is a variable for the each grid cell which is always modifiab
 /////////////////////////////////////////////////////////////////////////////////
 
 void GridStatus(int grid[][sizeOfGrid]){
-    ofstream output_file("gridStatus.txt");
+    std::ofstream output_file("gridStatus.txt");
     for (int i = 0; i < sizeOfGrid; i++){
         output_file<<"[";
         for (int j = 0; j < sizeOfGrid; j++){
             if(output_file.is_open()){
-                if (j != sizeOfGrid-1) output_file << grid[i][j]<<", ";
+                if (j != sizeOfGrid-1) output_file << grid[i][j]<<",";
                 else output_file<< grid[i][j];
             }
         }
-        output_file<<"]"<<endl;
+        output_file<<"]"<<std::endl;
     }
     output_file.close();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-//      fileParser() function parses the problem.txt.                         //
+//      FileParser() function parses the problem.txt.                         //
 //      Integrate this function with your DFS algorithm to create             //
 //          'solution.txt' file.                                              //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,72 +48,102 @@ void GridStatus(int grid[][sizeOfGrid]){
 //============================================================================//
 //      DO NOT MAKE EDITS TO THE CODE BELOW THIS LINE UNLESS IMPROVING IT!    //
 
-void fileParser(){
-    ifstream import_data("problem.txt");
-    string line;
-    int b_pos=0, e_pos=0, key_coordinates=0, key_problems=0, problem_in_digits=0;
-    char x_coordinate, y_coordinate;
+void ParseCoordinates(){
+    std::string line;
+    int e_pos=0, b_pos=0, key_coordinates;
+    std::ifstream import_data("problem.txt");
     if(import_data.is_open()){
-        while(!import_data.eof()) {
-            getline(import_data, line);
-            cout << line << endl;
-            while((line.length() != e_pos) || key_coordinates == 1) {
-                b_pos = line.find("(", b_pos);
-                e_pos = line.find(")", e_pos);
-                if(e_pos == -1 || b_pos == -1) break;
-                cout << "(" << line.at(b_pos+1) << ", " << line.at(e_pos-1) << ")" << endl;
-                ++b_pos;
-                ++e_pos;
-                if (e_pos >= line.length()) key_coordinates=1;
+        getline(import_data, line);
+        while((line.length() != e_pos) || key_coordinates == 1) {
+            int x_cord, y_cord;
+            b_pos = line.find("(", b_pos);
+            e_pos = line.find(")", e_pos);
+            if(e_pos == -1 || b_pos == -1) break;
+            if(line.at(b_pos+2) == ',' && line.at(e_pos-2) == ',') {
+                x_cord = line.at(b_pos+1) -48; y_cord = line.at(e_pos-1) -48;
+                grid[x_cord][y_cord] = 1;
             }
-            if(!key_problems){
-                getline(import_data, line);
-                problem_in_digits = stoi(line) - 1;
-                cout << "Number of problems in this file: " << problem_in_digits+1 << endl;
-                key_problems=1;
+            else if(line.at(b_pos+3) == ',' && line.at(e_pos-3) == ','){
+                std::string data="";
+                data += line.at(b_pos+1);
+                data += line.at(b_pos+2);
+                std::istringstream(data) >> x_cord;
+                data.clear();
+                data += line.at(b_pos+4);
+                data += line.at(b_pos+5);
+                std::istringstream(data) >> y_cord;
+                grid[x_cord][y_cord] = 1;
             }
-            while(problem_in_digits >= 0){
-                getline(import_data, line);
-                int x_coordinate0, y_coordinate0, 
-                    x_coordinate1, y_coordinate1, count=0, tracker=0;
-                string buf;
-                for(tracker=0; line.length() > count; count++){
-                    if(isdigit(line.at(count))){
-                        buf += line.at(count);
-                    } 
-                    if(!isdigit(line.at(count))){
-                        tracker++;
-                        if(tracker==1) x_coordinate0=stoi(buf);
-                        else if(tracker==2)y_coordinate0=stoi(buf);
-                        else if(tracker==3)x_coordinate1=stoi(buf);
-                        else if(tracker==4)y_coordinate1=stoi(buf);
-                        buf.clear();
-                    }
-                }
-                problem_in_digits--;
-                // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                //  DO NOT MAKE EDITS TO THE CODE ABOVE THIS LINE UNLESS YOU ARE IMPROVING IT.
-                //  x_coordinate0 & y_coordinate0 are START COORDINATES.
-                //  x_coordinate1 & y_coordinate1 are END COORDINATES.
-                //  These coordinates are available each time loop iterates, make sure to store them in a
-                //      safe place before operating on it.
-                cout << "Start Coordinates\t: ("<< x_coordinate0 << ", " << y_coordinate0 << ")" << endl;       // <------- Make changes here as needed
-                cout << "End Coordinates\t\t: ("<< x_coordinate1 << ", " << y_coordinate1 << ")" << endl;       // <------- Make changes here as needed
-                //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  //
-                //                             MAKE CHANGES AS NEEDED HERE                             //
+            else if(line.at(b_pos+3) == ',' && line.at(e_pos-2) == ','){
+                std::string data="";
+                data += line.at(b_pos+1);
+                data += line.at(b_pos+2);
+                std::istringstream(data) >> x_cord;
+                data.clear();
+                data += line.at(b_pos+4);
+                std::istringstream(data) >> y_cord;
+                grid[x_cord][y_cord] = 1;
+            }
+            else if(line.at(b_pos+2) == ',' && line.at(e_pos-3) == ','){
+                std::string data="";
+                data += line.at(b_pos+1);
+                std::istringstream(data) >> x_cord;
+                data.clear();
+                data += line.at(b_pos+3);
+                data += line.at(b_pos+4);
+                std::istringstream(data) >> y_cord;
+                grid[x_cord][y_cord] = 1;
+            }
+            ++b_pos; ++e_pos;
+            if (e_pos >= line.length()) key_coordinates=1;
+        }
+    }
+    GridStatus(grid);                                           // Instrustions for this function ('GridStatus()') provided above. 
+    import_data.close();
+}
+
+int QuantityOfProblemsFinder(){
+    std::string line;
+    int problem_in_digits;
+    std::ifstream import_data("problem.txt");
+    for(int i=0; i<2;i++) getline(import_data, line);
+    std::istringstream(line)>>problem_in_digits;
+    import_data.close();
+    return problem_in_digits;
+}
+
+void ProblemCoordinates(){
+    std::ofstream export_coordinates("coordinates.txt");
+    export_coordinates << QuantityOfProblemsFinder() << std::endl;
+    std::ifstream import_data("problem.txt");
+    std::string buf, line;
+    int x_coordinate0, y_coordinate0, 
+        x_coordinate1, y_coordinate1, problem_in_digits = QuantityOfProblemsFinder();
+    for(int i=0; i<2;i++) getline(import_data, line);
+    while(problem_in_digits>0){
+        int count=0, tracker=0;
+        getline(import_data, line);
+        for(tracker=0; line.length() > count; count++){
+            if(isdigit(line.at(count))) buf += line.at(count);
+            if(!isdigit(line.at(count))){
+                tracker++;
+                if(tracker==1) std::istringstream(buf) >> x_coordinate0;
+                else if(tracker==2) std::istringstream(buf) >> y_coordinate0;
+                else if(tracker==3) std::istringstream(buf) >> x_coordinate1;
+                else if(tracker==4) std::istringstream(buf) >> y_coordinate1;
+                buf.clear();
             }
         }
-    } else perror("Error opening file!\n");
+    problem_in_digits--;
+    export_coordinates << x_coordinate0 << "," << y_coordinate0 << ","<< x_coordinate1 << "," << y_coordinate1 << std::endl;       // <------- Make changes here as needed
+    }
     import_data.close();
 }
 
 int main(){
-    int grid[sizeOfGrid][sizeOfGrid];
-    for(int i=0;i<sizeOfGrid;i++)           //  <--- This loop creates the grid
-        for(int j=0;j<sizeOfGrid;j++){      //  <-----------------
-            grid[i][j] = x;                 //  <-----------------
-        }                                   //  <--- Loop Ends
-    GridStatus(grid);                    // Instrustions for this function ('GridStatus()') provided above. 
-    fileParser();
+    for(int i=0;i<sizeOfGrid;i++)                               //  <--- This loop creates the grid
+        for(int j=0;j<sizeOfGrid;j++) grid[i][j] = x;           //  <-----------------
+    ParseCoordinates();                                         //  <--- Loop Ends
+    ProblemCoordinates();
     return 0;
 }

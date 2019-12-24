@@ -6,6 +6,18 @@
 
 We aim to implement Depth First Search (DFS) on a grid, program will accept a _problem text file_ and output a _solution text file_.
 
+- Up    : 1 move = 2 Squares
+- Down  : 1 move = 2 Squares
+- Left  : 1 move = 1 Square
+- Right : 1 move = 3 Squares
+
+Grid Rules:
+
+- Available Cell    :  1
+- Unavailable Cell  : -1
+- Start Cell        :  2
+- End Cell          :  3
+
 An example of problem text file (_problem.txt_):
 ```
 1. (0,6)(5,1)...(6,9) // List of available spaces in the grid.
