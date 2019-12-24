@@ -1,4 +1,5 @@
-#include "LedControl.h"
+#include <LedControl.h>
+#include <SoftwareSerial.h>
 LedControl lc=LedControl(12,11,10,4);
 boolean ON = true;
 boolean OFF = false;
@@ -12,7 +13,7 @@ byte one[] =
   B00011000,
   B00011000,
   B00011000,
-  B00111100,two
+  B00111100,
   B00000000
 };
 
@@ -54,7 +55,7 @@ void setup() {
   /* and clear the display */
   lc.clearDisplay(0);
   lc.clearDisplay(1);
-}
+
 
  if (Serial.available() > 0){
 	String info;
@@ -133,7 +134,7 @@ void setup() {
       
     }
  }
-
+}
 void digit_init()
 {
   for (int i = 0; i < 8; i++)  
