@@ -242,7 +242,9 @@ void SolutionCreator(){
         for_arduino << "(" << arr[0] << "," << arr[1] << ")";
     }
     solution_file << std::endl;
-    for_arduino << "#" << std::endl;
+    for_arduino << std::endl;
+    solution_file.close();
+    for_arduino.close();
 
 }
 int EntryPoint(const std::string& fileName, int problemNumber){
