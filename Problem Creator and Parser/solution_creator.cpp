@@ -261,10 +261,14 @@ void SolutionCreator(){                                     // Creates solution.
     forArduino.open("ArdSolution.txt", std::ios_base::app);
     solutionFile.open("solution.txt", std::ios_base::app);
     solutionFile << path.size() - 1 << " ";
-    for(int i : path){
-        int* arr = CoordinateFinder(i);
+    for(int i = 0; i<path.size(); i++){
+        int* arr = CoordinateFinder(path.at(i));
         solutionFile << "(" << arr[0] << "," << arr[1] << ")";
-        forArduino << "(" << arr[0] << "," << arr[1] << ")";
+        if(i != path.size()-1)
+            forArduino << "(" << arr[0] << "," << arr[1] << "),";
+        else
+            forArduino << "(" << arr[0] << "," << arr[1] << ")";
+        
     }
     solutionFile << std::endl;
     forArduino << std::endl;

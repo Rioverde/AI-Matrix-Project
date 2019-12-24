@@ -1,6 +1,7 @@
 import subprocess
 import serial
-
+import time
+from unidecode import unidecode
 
 #####################################################################
 #   Opens coordinates.txt to find out number of problems in file    #
@@ -35,17 +36,19 @@ ard_solution.write('#')
 #           it into the Arduino serial monitor.                         #
 #########################################################################
 
-com_port_string = "/dev/ttyACM0"
+com_port_string = "/dev/ttyUSB0"
 
 ard_solution.seek(0)
-problem_find = ard_solution.read()
-print(problem_find)
+string = b"send"
+with serial.Serial(com_port_string, 115200, timeout=0) as arduino_serial:
+    line=""
+    arduino_serial.write(string)
+    while arduino_serial.inWaiting():
+        line += arduino_serial.read
+    print(line)
+            
 
-with serial.Serial(com_port_string, 9600, timeout=1) as arduino_serial:
-    arduino_serial.write("c".encode())
-    problem_find = ard_solution.read()
-    print(problem_find)
-    arduino_serial.write(problem_find.encode())
+    # arduino_serial.write(problem_find.encode())
 
 solution.close()
 ard_solution.close()
