@@ -17,14 +17,12 @@ void setup() {
   lc.setIntensity(0,8);
   /* and clear the display */
   lc.clearDisplay(0);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-    Serial.begin(9600);
+  Serial.begin(9600);
 }
 
 
 void loop(){
+
   if (Serial.available() > 0){
   Serial.println("Connected");
   String info;
@@ -33,6 +31,7 @@ void loop(){
       info += c;
     }
   Serial.println(info);
+  }
 
   //parcing document in arduino
   for(int i = 0; i < info.length(); i++) {
@@ -87,10 +86,9 @@ void loop(){
     lc.setLed(0, row, col, OFF);
     
    }
-  }
 
   else
-    Serial.println("Error in Connection: Serial is not available");
+    Serial.println("Error: Serial Connection is not available");
 
    delay(3000);
    lc.clearDisplay(0);
