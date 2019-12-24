@@ -36,16 +36,18 @@ ard_solution.write('#')
 #           it into the Arduino serial monitor.                         #
 #########################################################################
 
-com_port_string = "/dev/ttyUSB0"
+com_port_string = "/dev/ttyACM0"
 
 ard_solution.seek(0)
-string = b"send"
-with serial.Serial(com_port_string, 115200, timeout=0) as arduino_serial:
-    line=""
-    arduino_serial.write(string)
-    while arduino_serial.inWaiting():
-        line += arduino_serial.read
-    print(line)
+string = "(5,4),(3,4),(1,4),(1,3),(3,3),(5,3),(7,3)"
+print(string)
+with serial.Serial(com_port_string, 9600, timeout=1) as arduino_serial:
+    for str in string:
+        arduino_serial.write(str.encode())
+    # arduino_serial.write(b'x')
+    time.sleep(2)
+    
+    print(arduino_serial.readline())
             
 
     # arduino_serial.write(problem_find.encode())
