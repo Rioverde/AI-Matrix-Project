@@ -13,7 +13,7 @@ From a position, you can only move
 - Right : 3 squares
 
 */
-const int sizeOfGrid=12; // Size of Grid
+const int sizeOfGrid=8; // Size of Grid
 int x = -1; // 'x' is a variable for the each grid cell which is always modifiable.
 int grid[sizeOfGrid][sizeOfGrid];
 /////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +135,7 @@ void ProblemCoordinates(){
             }
         }
     problem_in_digits--;
-    export_coordinates << "("<< x_coordinate0 << "," << y_coordinate0 << ")" << "("<< x_coordinate1 << "," << y_coordinate1 << ")"  << std::endl;       // <------- Make changes here as needed
+    export_coordinates << x_coordinate0 << "," << y_coordinate0 << ","<< x_coordinate1 << "," << y_coordinate1 << std::endl;       // <------- Make changes here as needed
     }
     import_data.close();
 }

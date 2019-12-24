@@ -10,8 +10,7 @@ struct Grid{
 };
 
 std::vector<int> visited, storedEdges[2], path;
-const int sizeOfGrid = 12, up=-2, down=2, left=-1, right=3;
-int start[] = {0, 11}, end[] = {8, 2};
+const int sizeOfGrid = 8, up=-2, down=2, left=-1, right=3;
 int storeCell[sizeOfGrid][sizeOfGrid], coordinates[2];
 bool GoalFound = false, GoalCheck = false;
 int count = 0;
@@ -22,17 +21,17 @@ void SetGrid(){
     std::ifstream ReadGrid("gridStatus.txt");
     if(!ReadGrid.is_open()) exit(1);
     std::string line;
-    int count = 1;
-    for(int i=0;i<sizeOfGrid; i++)
-        for(int j=0;j<sizeOfGrid; j++,count++)
-            myGrid[i][j].cell_number=count;
+    int counting = 1;
+    for(auto & i : myGrid)
+        for(int j=0;j<sizeOfGrid; j++,counting++)
+            i[j].cell_number=counting;
 
-    for (int i = 0; i < sizeOfGrid; i++){
+    for (auto & i : myGrid){
         getline(ReadGrid, line);
         std::stringstream ss(line.substr(1));
         std::string s;
         for (int j = 0; getline(ss, s, ','); j++)
-            myGrid[i][j].value = std::stoi(s);
+            i[j].value = std::stoi(s);
         line.clear();
     }
 }
@@ -41,19 +40,23 @@ bool isOdd(int n){
 }
 
 class Graph{
-    private:
-        std::list<int> *adj;
-        void DFS_helper(int s, bool *visited, int goal);
-    public:
-        int verticesVariable;
-        Graph(int vertices);
-        void addEdge(int parent_vertex, int child_vertex);
-        void DFS(int start_vertex, int goal);
+private:
+    int verticesVariable;
+    std::list<int> *adj;
+    void DFS_helper(int s, bool *visited, int goal);
+public:
+    explicit Graph(int vertices);
+    ~Graph();
+    void addEdge(int parent_vertex, int child_vertex);
+    void DFS(int start_vertex, int goal);
 };
 
 Graph::Graph (int vertices){
     verticesVariable = vertices;
     adj = new std::list<int>[vertices];
+}
+Graph::~Graph(){
+    delete [] adj;
 }
 
 void Graph::addEdge(int parent_vertex, int child_vertex){
@@ -104,12 +107,12 @@ int EdgeCounter(int starter[1], int ender[1]){
             left_digit = myGrid[starter[0]][starter[1] + left].cell_number, right_digit = myGrid[starter[0]][starter[1] + right].cell_number,
             end_digit = myGrid[ender[0]][ender[1]].cell_number, parent = myGrid[starter[0]][starter[1]].cell_number;
     int up_value = myGrid[starter[0] + up][starter[1]].value, down_value = myGrid[starter[0] + down][starter[1]].value,
-        left_value = myGrid[starter[0]][starter[1] + left].value, right_value = myGrid[starter[0]][starter[1] + right].value;
+            left_value = myGrid[starter[0]][starter[1] + left].value, right_value = myGrid[starter[0]][starter[1] + right].value;
     if(GoalFound) return count;
 
     std::cout<< up_digit << " :Going upper" << std::endl;
 
-    if((up_digit > 0 && up_digit < 145) && up_value > 0){
+    if(up_digit > 0 && up_digit < 145 && up_value > 0){
         count++;
         if(up_digit == end_digit) {
             GoalFound = true;
@@ -134,7 +137,7 @@ int EdgeCounter(int starter[1], int ender[1]){
 
     std::cout<< down_digit << " :Going down" << std::endl;
 
-    if((down_digit > 0 && down_digit < 145) && down_value > 0){
+    if(down_digit > 0 && down_digit < 145 && down_value > 0){
 
         count++;
         if(down_digit == end_digit) {
@@ -160,7 +163,7 @@ int EdgeCounter(int starter[1], int ender[1]){
 
     std::cout<< left_digit << " :Going lefter" << std::endl;
 
-    if((left_digit > 0 && left_digit < 145) && left_value > 0){
+    if(left_digit > 0 && left_digit < 145 && left_value > 0){
 
         count++;
         if(left_digit == end_digit) {
@@ -186,7 +189,7 @@ int EdgeCounter(int starter[1], int ender[1]){
 
     std::cout << right_digit << " :Going righter" << std::endl;
 
-    if((right_digit > 0 && right_digit < 145) && down_value > 0){
+    if(right_digit > 0 && right_digit < 145 && right_value > 0){
 
         count++;
         if(right_digit == end_digit) {
@@ -229,24 +232,49 @@ int* CoordinateFinder(int num){
     return nullptr;
 }
 void SolutionCreator(){
-    std::ofstream solution_file("solution.txt");
-    solution_file << path.size() << " ";
+    std::ofstream solution_file, for_arduino;
+    for_arduino.open("ArdSolution.txt", std::ios_base::app);
+    solution_file.open("solution.txt", std::ios_base::app);
+    solution_file << path.size()-1 << " ";
     for(int i : path){
         int* arr = CoordinateFinder(i);
         solution_file << "(" << arr[0] << "," << arr[1] << ")";
+        for_arduino << "(" << arr[0] << "," << arr[1] << ")";
     }
     solution_file << std::endl;
+    for_arduino << std::endl;
 
 }
-
-int main(){                                                                     // 2n^2-2n is the formula for number of nodes in a grid(nxn)
+int EntryPoint(const std::string& fileName, int problemNumber){
+    int start[2],end[2];
+    std::ifstream problemFile(fileName);
+    std::string liner, number;
+    getline(problemFile, liner);
+    int numberOfProblems = std::stoi(liner);
+    if (numberOfProblems>=problemNumber && problemNumber != 0)
+        for(int k=0;k<problemNumber;k++) getline(problemFile, liner);
+    else return 1;
+    std::stringstream myStream(liner);
+    for(int j=0; getline(myStream, liner, ','); j++){
+        if(j<2) start[j] = std::stoi(liner);
+        if(j>=2) end[j-2] = std::stoi(liner);
+    }
+    std::cout<<start[0]<<"," <<start[1]<<std::endl;
+    std::cout<<end[0]<<"," <<end[1]<<std::endl;
+    GoalCheck=false;
+    GoalFound=false;                                                            // 2n^2-2n is the formula for number of nodes in a grid(nxn)
     SetGrid();                                                                  //  where 'n' is number of cells on each side.
-    // For 12x12 grid, we have 552 Nodes
-    visited.clear();
+    visited.clear();                                                            // For 12x12 grid, we have 552 Nodes
     Graph g(EdgeCounter(start, end)+552);
     EdgeAdder(g);
     g.DFS(myGrid[start[0]][start[1]].cell_number, myGrid[end[0]][end[1]].cell_number);
     std::cout << myGrid[end[0]][end[1]].cell_number << std::endl;
-    SolutionCreator();
-    return 0;
+    if(GoalCheck) SolutionCreator();
+    else std::cout<<"Goal Not Found!"<<std::endl;
+    return 2;
+}
+
+int main(int argc, char** argv){
+    int x = strtol(argv[1], nullptr, 0);
+    return EntryPoint("coordinates.txt", x);;
 }
