@@ -5,21 +5,46 @@
 #include <list>
 #include <vector>
 
+///////////////////////////////////////////////////////////////////////////////
+//       Grid struct represents each cell in a grid, each cell contains      //
+//          a cell number and a value (available or not)                     //
+///////////////////////////////////////////////////////////////////////////////
+
 struct Grid{
     int cell_number, value;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+//     -visited vector stores the cells that has been visited, it is         //
+//          used in checkVisitor() function against a cell number.           //
+//     -storedEdges[2] vector stores every parent and child nodes available. //
+//     -path vector stores the path taken to reach the goal.                 //
+///////////////////////////////////////////////////////////////////////////////
+
 std::vector<int> visited, storedEdges[2], path;
 const int sizeOfGrid = 8, up=-2, down=2, left=-1, right=3;
-int storeCell[sizeOfGrid][sizeOfGrid], coordinates[2];
+
+// Used to find x,y coordinates using grid cell number in coordinatesFinder() function.
+
+int coordinates[2];
+
+// GoalFound bool is used while mapping the graph
+// GoadCheck bool is used while DFS is finding the shortest distance
+
 bool GoalFound = false, GoalCheck = false;
 int count = 0;
+
+// Creating a grid
+
 Grid myGrid[sizeOfGrid][sizeOfGrid];
 
 void SolutionCreator();
+
+// Reads gridStatus to set value in grid the created grid.
+
 void SetGrid(){
     std::ifstream ReadGrid("gridStatus.txt");
-    if(!ReadGrid.is_open()) exit(1);
+    if(!ReadGrid.is_open()) exit(55);
     std::string line;
     int counting = 1;
     for(auto & i : myGrid)
@@ -35,20 +60,21 @@ void SetGrid(){
         line.clear();
     }
 }
-bool isOdd(int n){
-    return n % 2 != 0;
-}
+
+////////////////////////////////////////////////////////////////////////////////
+//                      Implementation of DFS algorithm                       //
+////////////////////////////////////////////////////////////////////////////////
 
 class Graph{
 private:
-    int verticesVariable;
-    std::list<int> *adj;
-    void DFS_helper(int s, bool *visited, int goal);
+    int verticesVariable;                                 // Number of nodes in graph
+    std::list<int> *adj;                                  // Stores adjacent nodes in list
+    void DFS_helper(int s, bool *visitedBool, int goal);  // Traverses through the graph and marks the visited nodes
 public:
-    explicit Graph(int vertices);
-    ~Graph();
-    void addEdge(int parent_vertex, int child_vertex);
-    void DFS(int start_vertex, int goal);
+    explicit Graph(int vertices);                         // Constructor to initialize a graph
+    ~Graph();                                             // Destructor to deallocate memory once done
+    void addEdge(int parent_vertex, int child_vertex);    // Used to make a parent child relation in a graph
+    void DFS(int start_vertex, int goal);                 // Main entry point for DFS, provide start node and end node
 };
 
 Graph::Graph (int vertices){
@@ -63,7 +89,7 @@ void Graph::addEdge(int parent_vertex, int child_vertex){
     adj[parent_vertex].push_back(child_vertex);
 }
 
-void Graph::DFS_helper(int s, bool *visited, int goal){
+void Graph::DFS_helper(int s, bool *visitedBool, int goal){
     if(GoalCheck) return;
     std::cout<< "Visiting Node " << s << std::endl;
     path.push_back(s);
@@ -77,35 +103,34 @@ void Graph::DFS_helper(int s, bool *visited, int goal){
             }
             std::cout<< path.at(i) << " ==> ";
         }
-        ;
     }
-    visited[s] = true;
+    visitedBool[s] = true;
     for(auto i = adj[s].begin(); i != adj[s].end(); i++){
         if(GoalCheck) return;
-        if(!visited[*i]){
+        if(!visitedBool[*i]){
             std::cout << "Going to vertex " << *i << " from vertex " << s << std::endl;
-            DFS_helper(*i, visited, goal);
+            DFS_helper(*i, visitedBool, goal);
         }
     }
 }
 
 void Graph::DFS(int s, int goal){
-    bool *visited = new bool[verticesVariable];
-    for(int i = 0; i < verticesVariable; i++) visited[i] = false;
-    DFS_helper(s, visited, goal);
+    bool *visitedBool = new bool[verticesVariable];
+    for(int i = 0; i < verticesVariable; i++) visitedBool[i] = false;
+    DFS_helper(s, visitedBool, goal);
 }
 
 
-bool checkVisitor(int cellNumber){
-    for(unsigned int i = 0; i<visited.size(); i++)
-        if(cellNumber == visited.at(i)) return true;
+bool checkVisitor(int cellNumber){                          // Checks with storage is cell is visited or not.
+    for(int i : visited)
+        if(cellNumber == i) return true;
     return false;
-}                       // Checks with storage is cell is visited or not.
-int EdgeCounter(int starter[1], int ender[1]){
+}                       
+int EdgeCounter(int starter[1], int finisher[1]){           // Counts and stores the number of nodes available.
     if(count>552) return count;
     int up_digit = myGrid[starter[0] + up][starter[1]].cell_number, down_digit = myGrid[starter[0] + down][starter[1]].cell_number,
             left_digit = myGrid[starter[0]][starter[1] + left].cell_number, right_digit = myGrid[starter[0]][starter[1] + right].cell_number,
-            end_digit = myGrid[ender[0]][ender[1]].cell_number, parent = myGrid[starter[0]][starter[1]].cell_number;
+            end_digit = myGrid[finisher[0]][finisher[1]].cell_number, parent = myGrid[starter[0]][starter[1]].cell_number;
     int up_value = myGrid[starter[0] + up][starter[1]].value, down_value = myGrid[starter[0] + down][starter[1]].value,
             left_value = myGrid[starter[0]][starter[1] + left].value, right_value = myGrid[starter[0]][starter[1] + right].value;
     if(GoalFound) return count;
@@ -130,7 +155,7 @@ int EdgeCounter(int starter[1], int ender[1]){
         storedEdges[1].push_back(up_digit);
         std::cout << up_digit << " pushed and up " << count << std::endl;
         int init[] = {starter[0] + up, starter[1]};
-        EdgeCounter(init, ender);
+        EdgeCounter(init, finisher);
     }
 
     downer:
@@ -156,7 +181,7 @@ int EdgeCounter(int starter[1], int ender[1]){
         storedEdges[1].push_back(down_digit);
         std::cout << down_digit << " pushed and down " << count << std::endl;
         int init[] = {starter[0] + down, starter[1]};
-        EdgeCounter(init, ender);
+        EdgeCounter(init, finisher);
     }
 
     lefter:
@@ -182,7 +207,7 @@ int EdgeCounter(int starter[1], int ender[1]){
         storedEdges[1].push_back(left_digit);
         std::cout << left_digit << " pushed and down " << count << std::endl;
         int init[] = {starter[0], starter[1] + left};
-        EdgeCounter(init, ender);
+        EdgeCounter(init, finisher);
     }
 
     righter:
@@ -208,19 +233,19 @@ int EdgeCounter(int starter[1], int ender[1]){
         storedEdges[1].push_back(right_digit);
         std::cout << right_digit << " pushed and down " << count << std::endl;
         int init[] = {starter[0], starter[1] + right};
-        EdgeCounter(init, ender);
+        EdgeCounter(init, finisher);
     }
 
     return count;
-}           // Counts and stores the number of edges
-void EdgeAdder(Graph& g){
+}
+void EdgeAdder(Graph& g){                                   // Adds the edges to graph from storage before running DFS
     for(int i=0;i<storedEdges[0].size() || i< storedEdges[1].size(); i++){
         int parent = storedEdges[0].at(i), child = storedEdges[1].at(i);
         std::cout << "Parent: " << parent << " Child: " << child << std::endl;
         g.addEdge(parent, child);
     }
-}                                // Adds the edges to graph from storage before running DFS
-int* CoordinateFinder(int num){
+}
+int* CoordinateFinder(int num){                             // Takes a cell number as a parameter and return x,y coordinates
     for(int i=0; i<sizeOfGrid; i++)
         for(int j=0; j<sizeOfGrid; j++){
             if(myGrid[i][j].cell_number == num) {
@@ -231,22 +256,30 @@ int* CoordinateFinder(int num){
         }
     return nullptr;
 }
-void SolutionCreator(){
-    std::ofstream solution_file, for_arduino;
-    for_arduino.open("ArdSolution.txt", std::ios_base::app);
-    solution_file.open("solution.txt", std::ios_base::app);
-    solution_file << path.size()-1 << " ";
+void SolutionCreator(){                                     // Creates solution.txt as per requirement and ArdSolution.txt for serial input to arduino
+    std::ofstream solutionFile, forArduino;
+    forArduino.open("ArdSolution.txt", std::ios_base::app);
+    solutionFile.open("solution.txt", std::ios_base::app);
+    solutionFile << path.size() - 1 << " ";
     for(int i : path){
         int* arr = CoordinateFinder(i);
-        solution_file << "(" << arr[0] << "," << arr[1] << ")";
-        for_arduino << "(" << arr[0] << "," << arr[1] << ")";
+        solutionFile << "(" << arr[0] << "," << arr[1] << ")";
+        forArduino << "(" << arr[0] << "," << arr[1] << ")";
     }
-    solution_file << std::endl;
-    for_arduino << std::endl;
-    solution_file.close();
-    for_arduino.close();
+    solutionFile << std::endl;
+    forArduino << std::endl;
+    solutionFile.close();
+    forArduino.close();
 
 }
+
+///////////////////////////////////////////////////////////////////////////
+//    Takes File name and problem number to be solved as parameter.      //
+//    Creates a graph, counts the  number of nodes, finds shortest       //
+//          path using DFS and then appends to solution.txt and          //
+//          ArdSolution.txt                                              //
+///////////////////////////////////////////////////////////////////////////
+
 int EntryPoint(const std::string& fileName, int problemNumber){
     int start[2],end[2];
     std::ifstream problemFile(fileName);

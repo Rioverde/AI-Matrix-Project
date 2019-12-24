@@ -16,6 +16,7 @@ From a position, you can only move
 const int sizeOfGrid=8; // Size of Grid
 int x = -1; // 'x' is a variable for the each grid cell which is always modifiable.
 int grid[sizeOfGrid][sizeOfGrid];
+
 /////////////////////////////////////////////////////////////////////////////////
 //          GridStatus() displays values in every cell.                        //
 //          Invoke a call to GridStatus if necessary, such as,                 //
@@ -25,7 +26,7 @@ int grid[sizeOfGrid][sizeOfGrid];
 /////////////////////////////////////////////////////////////////////////////////
 
 void GridStatus(int grid[][sizeOfGrid]){
-    std::ofstream output_file("gridStatus.txt");
+    std::ofstream output_file("gridStatus.txt");                                    //
     for (int i = 0; i < sizeOfGrid; i++){
         output_file<<"[";
         for (int j = 0; j < sizeOfGrid; j++){
@@ -40,13 +41,10 @@ void GridStatus(int grid[][sizeOfGrid]){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//      FileParser() function parses the problem.txt.                         //
-//      Integrate this function with your DFS algorithm to create             //
-//          'solution.txt' file.                                              //
+//      ParseCoordinates() function parses the first line of problem.txt.     //
+//      It sets to 1 for all the available cells parsed from first line       //
+//          into gridStatus.txt                                               //
 ////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//============================================================================//
-//      DO NOT MAKE EDITS TO THE CODE BELOW THIS LINE UNLESS IMPROVING IT!    //
 
 void ParseCoordinates(){
     std::string line;
@@ -102,6 +100,11 @@ void ParseCoordinates(){
     import_data.close();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  QuantityOfProblemsFinder() function parses the second line of problem.txt //
+//      It returns the number of problems available in this file              //
+////////////////////////////////////////////////////////////////////////////////
+
 int QuantityOfProblemsFinder(){
     std::string line;
     int problem_in_digits;
@@ -111,6 +114,11 @@ int QuantityOfProblemsFinder(){
     import_data.close();
     return problem_in_digits;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//      ProblemCoordinates() function parses all the problems that are        //
+//          available in the file into coordinates.txt                        //
+////////////////////////////////////////////////////////////////////////////////
 
 void ProblemCoordinates(){
     std::ofstream export_coordinates("coordinates.txt");

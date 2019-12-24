@@ -2,6 +2,13 @@ import subprocess
 import serial
 
 
+#####################################################################
+#   Opens coordinates.txt to find out number of problems in file    #
+#   Truncates & opens soultion.txt & ArdSolution.txt                #
+#   Executes the .cpp files and gets an input on the previously     #
+#       2 opened files.                                             #
+#####################################################################
+
 with open('coordinates.txt') as problem_finder:
     numberOfIssues= int(problem_finder.readline())
 
@@ -23,13 +30,19 @@ for num in range(1,numberOfIssues+1):
 ard_solution.seek(0, 2)
 ard_solution.write('#')
 
-com_port_checker = "/dev/ttyACM0"
+#########################################################################
+#       Opens a serial port using the provided COM Port and writes      #
+#           it into the Arduino serial monitor.                         #
+#########################################################################
+
+com_port_string = "/dev/ttyACM0"
 
 ard_solution.seek(0)
 problem_find = ard_solution.read()
 print(problem_find)
 
-with serial.Serial(com_port_checker, 9600, timeout=1) as arduino_serial:
+with serial.Serial(com_port_string, 9600, timeout=1) as arduino_serial:
+    arduino_serial.write("c".encode())
     problem_find = ard_solution.read()
     print(problem_find)
     arduino_serial.write(problem_find.encode())
