@@ -299,8 +299,8 @@ int EntryPoint(const std::string& fileName, int problemNumber){
     GoalCheck=false;
     GoalFound=false;                                                            // 2n^2-2n is the formula for number of nodes in a grid(nxn)
     SetGrid();                                                                  //  where 'n' is number of cells on each side.
-    visited.clear();                                                            // For 12x12 grid, we have 552 Nodes
-    Graph g(EdgeCounter(start, end)+552);
+    visited.clear();                                                            // For 8x8 grid, we have 112 Nodes
+    Graph g(EdgeCounter(start, end)+112);
     EdgeAdder(g);
     g.DFS(myGrid[start[0]][start[1]].cell_number, myGrid[end[0]][end[1]].cell_number);
     std::cout << myGrid[end[0]][end[1]].cell_number << std::endl;
