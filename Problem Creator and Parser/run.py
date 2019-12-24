@@ -11,11 +11,15 @@ ard_solution = open('ArdSolution.txt', 'w')
 # problems_to_be_generated = int(input("Problems to be generated: "))
 # print("Running problem creator...\n")
 # problem_creator = subprocess.call(["python problem_file_creator.py"])
+
 print("Running Problem File Parser")
-problem_parser = subprocess.call(["./problem_file_parser"])
+problem_parser = subprocess.run(["./problem_file_parser"])
 
 for num in range(1,numberOfIssues+1):
-    my_process = subprocess.call(["./solution_creator", f"{num}"])
+    my_process = subprocess.run(["./solution_creator", f"{num}"])
 
 solution.close()
 ard_solution.close()
+
+com_port_checker = subprocess.check_output(["ls", "/dev/ttyACM"], shell=True)
+print(com_port_checker)

@@ -242,7 +242,7 @@ void SolutionCreator(){
         for_arduino << "(" << arr[0] << "," << arr[1] << ")";
     }
     solution_file << std::endl;
-    for_arduino << std::endl;
+    for_arduino << "#" << std::endl;
 
 }
 int EntryPoint(const std::string& fileName, int problemNumber){
@@ -271,7 +271,7 @@ int EntryPoint(const std::string& fileName, int problemNumber){
     std::cout << myGrid[end[0]][end[1]].cell_number << std::endl;
     if(GoalCheck) SolutionCreator();
     else std::cout<<"Goal Not Found!"<<std::endl;
-    return 2;
+    return 1;
 }
 
 int main(int argc, char** argv){
