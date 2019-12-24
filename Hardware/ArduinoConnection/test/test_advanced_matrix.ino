@@ -56,79 +56,83 @@ void setup() {
   lc.clearDisplay(1);
 }
 
-int counter = 1;
-void loop(){
-String info = "(0,0),(0,1),(0,2),(1,2),(1,3),m(2,3),(1,5),(1,6)";
-  Serial.begin(9600);
+ if (Serial.available() > 0){
+	String info;
+	info = SerialStringUntill('#');
+	Serial.Print(info);
+    int counter = 1;
+    void loop(){
+      Serial.begin(9600);
 
-  //parcing document in arduino
-  for(int i = 0; i < info.length(); i++) {
-    int row = 0, col = 0;                                                                                                                                                        
+      //parcing document in arduino
+      for(int i = 0; i < info.length(); i++) {
+        int row = 0, col = 0;                                                                                                                                                        
 
-    if(counter == 1){
-        digit_init();
+        if(counter == 1){
+            digit_init();
+            }
+        if(info[i] == '\n'){
+          counter++;
+          lc.clearDisplay(0);
+          lc.clearDisplay(1);
+          
+          if(counter == 2){
+            digit_init2();
+            continue;
+            }
+
+          if(counter == 3){
+            digit_init3();
+            continue;
+            }
+      
         }
-    if(info[i] == 'm'){
-      counter++;
+
+        if(info[i] == ' ') {
+          ++i;
+
+          continue;
+        }
+        if(info[i] == '(') {
+          ++i;
+
+          if(isDigit(info[i])) {
+            Serial.println(info[i]);
+            row = (int)info[i] - 48;
+          }
+          ++i;
+
+          if(info[i] == ',') {
+            ++i;
+            if(isDigit(info[i])) {
+              Serial.println(info[i]);
+              col = (int)info[i] - 48;      
+            }
+            ++i;
+              if(info[i] == ')') {
+              ++i;
+              }
+            }
+          }
+
+        //set LED on
+        Serial.print(row);
+        Serial.print(" ");
+        Serial.print(col);
+
+        lc.setLed(0, row, col, ON);
+        delay(1000);
+        
+      }
+
+      delay(2000);
       lc.clearDisplay(0);
       lc.clearDisplay(1);
+      delay(2000);
+      counter = 1;
       
-      if(counter == 2){
-        digit_init2();
-        continue;
-        }
-
-      if(counter == 3){
-        digit_init3();
-        continue;
-        }
-   
     }
-
-    if(info[i] == ' ') {
-      ++i;
-
-      continue;
-    }
-    if(info[i] == '(') {
-      ++i;
-
-      if(isDigit(info[i])) {
-        Serial.println(info[i]);
-        row = (int)info[i] - 48;
-      }
-      ++i;
-
-      if(info[i] == ',') {
-        ++i;
-        if(isDigit(info[i])) {
-          Serial.println(info[i]);
-          col = (int)info[i] - 48;      
-        }
-        ++i;
-          if(info[i] == ')') {
-          ++i;
-          }
-        }
-      }
-
-    //set LED on
-    Serial.print(row);
-    Serial.print(" ");
-    Serial.print(col);
-
-    lc.setLed(0, row, col, ON);
-    delay(1000);
-    
-   }
-
-   delay(2000);
-   lc.clearDisplay(0);
-   lc.clearDisplay(1);
-   delay(2000);
-   counter = 1;
-  
-}
+ }
 
 void digit_init()
 {
