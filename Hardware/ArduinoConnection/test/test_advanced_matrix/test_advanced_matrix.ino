@@ -1,8 +1,6 @@
 #include <LedControl.h>
 #include <SoftwareSerial.h>
-LedControl lc=LedControl(12,11,10,4);
-boolean ON = true;
-boolean OFF = false;
+
 
 
 byte one[] =
@@ -35,12 +33,45 @@ byte three[] =
   B00000000,
   B00011000,
   B00100100,
-  B00001100,
+  B00001000,
+  B00000100,
+  B00100100,
   B00011000,
-  B00110000,
-  B00111100,
   B00000000
 };
+
+byte four[] =
+{
+  B00000000,
+  B00001100,
+  B00010100,
+  B00100100,
+  B00111100,
+  B00000100,
+  B00000100,
+  B00000000
+};
+
+byte def[] =
+{
+  B00000000,
+  B00000000,
+  B00110010,
+  B01001010,
+  B01111010,
+  B01001010,
+  B01001010,
+  B00000000
+};
+
+
+
+//Test
+//(0,0),(0,1),(0,2),(0,3),(0,4),(0,5),(0,6),(0,7)
+LedControl lc=LedControl(12,11,10,4);
+boolean ON = true;
+boolean OFF = false;
+int flag = 0;
 
 void setup() {
   /*
@@ -55,108 +86,135 @@ void setup() {
   /* and clear the display */
   lc.clearDisplay(0);
   lc.clearDisplay(1);
+  Serial.begin(115200);
 
-
- if (Serial.available() > 0){
-	String info;
-	info = SerialStringUntill('#');
-	Serial.Print(info);
-    int counter = 1;
-    void loop(){
-      Serial.begin(9600);
-
-      //parcing document in arduino
-      for(int i = 0; i < info.length(); i++) {
-        int row = 0, col = 0;                                                                                                                                                        
-
-        if(counter == 1){
-            digit_init();
-            }
-        if(info[i] == '\n'){
-          counter++;
-          lc.clearDisplay(0);
-          lc.clearDisplay(1);
-          
-          if(counter == 2){
-            digit_init2();
-            continue;
-            }
-
-          if(counter == 3){
-            digit_init3();
-            continue;
-            }
-      
-        }
-
-        if(info[i] == ' ') {
-          ++i;
-
-          continue;
-        }
-        if(info[i] == '(') {
-          ++i;
-
-          if(isDigit(info[i])) {
-            Serial.println(info[i]);
-            row = (int)info[i] - 48;
-          }
-          ++i;
-
-          if(info[i] == ',') {
-            ++i;
-            if(isDigit(info[i])) {
-              Serial.println(info[i]);
-              col = (int)info[i] - 48;      
-            }
-            ++i;
-              if(info[i] == ')') {
-              ++i;
-              }
-            }
-          }
-
-        //set LED on
-        Serial.print(row);
-        Serial.print(" ");
-        Serial.print(col);
-
-        lc.setLed(0, row, col, ON);
-        delay(1000);
-        
-      }
-
-      delay(2000);
-      lc.clearDisplay(0);
-      lc.clearDisplay(1);
-      delay(2000);
-      counter = 1;
-      
-    }
- }
 }
-void digit_init()
+
+String info;
+int row = 0, col = 0;
+
+void loop(){
+
+  if (Serial.available()){
+    Serial.println("Connected");
+    info = Serial.readStringUntil('#');
+    Serial.println(info);
+  } 
+  if (!Serial.available()){
+      Serial.println("Error: Serial Connection is not available");
+      defv();
+      delay(1000);
+}
+
+  //parcing document in arduino
+  for(int i = 0; i < info.length(); i++) {                                                                                                                                                        
+
+    if(info[i] == '#'){
+      lc.clearDisplay(0);
+      flag++;
+    }
+    
+    if(info[i] == '\n'){
+      lc.clearDisplay(0);
+      delay(3000);
+      flag++;
+    }
+    
+    if(info[i] == ' ') {
+      ++i;
+      continue;
+    }
+    
+    if(info[i] == '(') {
+      ++i;
+
+      if(isDigit(info[i])) {
+        row = info[i] - '0';
+      }
+      ++i;
+
+      if(info[i] == ',') {
+        ++i;
+        if(isDigit(info[i])) {
+          col = info[i] - '0';
+        }
+        ++i;
+          if(info[i] == ')') {
+          ++i;
+          }
+        }
+      }
+      
+    switch(flag){
+      case 0:
+        one_init();
+        break;
+      case 1:
+        two_init();
+        break;
+      case 2:
+        tree_init();
+        break;
+      case 3:
+        four_init();
+        break;
+      default:
+        break;
+    }
+
+    //Light up Led with given Row and Column
+    lc.setLed(0, row, col, ON);
+    delay(1000);
+  }
+  
+  //Clean Display
+
+  flag = 0;
+  delay(1000);
+  lc.clearDisplay(0);
+  lc.clearDisplay(1);
+  delay(1000);
+
+}
+
+void one_init()
 {
   for (int i = 0; i < 8; i++)  
   {
     lc.setRow(1,i,one[i]);
   }
-
 }
 
-void digit_init2()
+void two_init()
 {
   for (int i = 0; i < 8; i++)  
   {
     lc.setRow(1,i,two[i]);
   }
-
 }
 
-void digit_init3()
+void tree_init()
 {
-     for (int i = 0; i < 8; i++)  
+  for (int i = 0; i < 8; i++)  
   {
     lc.setRow(1,i,three[i]);
-  } 
+  }
 }
+
+void four_init()
+{
+  for (int i = 0; i < 8; i++)  
+  {
+    lc.setRow(1,i,four[i]);
+  }
+}
+
+void defv()
+{
+  for (int i = 0; i < 8; i++)  
+  {
+    lc.setRow(1,i,def[i]);
+  }
+}
+
+
