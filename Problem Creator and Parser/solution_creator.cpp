@@ -271,7 +271,6 @@ void SolutionCreator(){                                     // Creates solution.
         
     }
     solutionFile << std::endl;
-    forArduino << std::endl;
     solutionFile.close();
     forArduino.close();
 
