@@ -211,8 +211,6 @@ void loop(){
         six_init();
         break;
       default:
-        donef();
-        delay(5000);
         break;
     }
 
@@ -226,6 +224,8 @@ void loop(){
   flag = 0;
   delay(1000);
   lc.clearDisplay(0);
+  donef();
+  delay(5000);
   lc.clearDisplay(1);
   delay(1000);
 }
