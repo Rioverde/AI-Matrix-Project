@@ -1,5 +1,4 @@
 #include <LedControl.h>
-#include <SoftwareSerial.h>
 
 
 
@@ -84,10 +83,11 @@ byte done[] =
 
 //Test
 //(0,0),(0,1),(0,2),(0,3),(0,4),(0,5),(0,6),(0,7)
-LedControl lc=LedControl(12,11,10,4);
+LedControl lc=LedControl(PB9,PB8,PB7,4);
 boolean ON = true;
 boolean OFF = false;
 int flag = 0;
+char c;
 
 void setup() {
   /*
@@ -111,11 +111,15 @@ int row = 0, col = 0;
 
 void loop(){
 
+  
   if (Serial.available()){
     Serial.println("Connected");
     info = Serial.readStringUntil('#');
+    donef();
+    }
     Serial.println(info);
-  } 
+    
+    
   if (!Serial.available()){
       Serial.println("Send Data");
       defv();
