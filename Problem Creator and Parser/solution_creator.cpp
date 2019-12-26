@@ -267,7 +267,7 @@ void SolutionCreator(){                                     // Creates solution.
         if(i != path.size()-1)
             forArduino << "(" << arr[0] << "," << arr[1] << "),";
         else
-            forArduino << "(" << arr[0] << "," << arr[1] << ")";
+            forArduino << "(" << arr[0] << "," << arr[1] << ")|";
         
     }
     solutionFile << std::endl;
