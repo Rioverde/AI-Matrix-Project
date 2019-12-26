@@ -51,6 +51,30 @@ byte four[] =
   B00000000
 };
 
+byte five =
+{
+  B00000000,
+  B00111100,
+  B00100000,
+  B00111100,
+  B00000100,
+  B00100100,
+  B00011000,
+  B00000000
+};
+
+byte six =
+{
+  B00000000,
+  B00011000,
+  B00100100,
+  B00100000,
+  B00111100,
+  B00100100,
+  B00011000,
+  B00000000
+};
+
 byte def[] =
 {
   B00000000,
@@ -180,7 +204,15 @@ void loop(){
       case 3:
         four_init();
         break;
+      case 4:
+        five_init();
+        break;
+      case 5:
+        six_init();
+        break;
       default:
+        donef();
+        delay(5000);
         break;
     }
 
@@ -243,6 +275,22 @@ void donef()
   for (int i = 0; i < 8; i++)  
   {
     lc.setRow(1,i,done[i]);
+  }
+}
+
+void five_init()
+{
+  for (int i = 0; i < 8; i++)  
+  {
+    lc.setRow(1,i,five[i]);
+  }
+}
+
+void six_init()
+{
+  for (int i = 0; i < 8; i++)  
+  {
+    lc.setRow(1,i,six[i]);
   }
 }
 
