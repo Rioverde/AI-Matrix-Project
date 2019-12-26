@@ -39,9 +39,9 @@ ard_solution.write('#')
 com_port_string = "/dev/ttyUSB0"
 
 ard_solution.seek(0)
-string = "(5,4),(3,4),(1,4),(1,3),(3,3),(5,3),(7,3)"
+string = ard_solution.read()
 print(string)
-with serial.Serial(com_port_string, 115200, timeout=1) as arduino_serial:
+with serial.Serial(com_port_string, 115200, timeout=1/50) as arduino_serial:
     for str in string:
         print(str)
         arduino_serial.write(str.encode())
