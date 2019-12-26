@@ -51,7 +51,7 @@ byte four[] =
   B00000000
 };
 
-byte five =
+byte five[] =
 {
   B00000000,
   B00111100,
@@ -63,7 +63,7 @@ byte five =
   B00000000
 };
 
-byte six =
+byte six []=
 {
   B00000000,
   B00011000,

@@ -92,7 +92,6 @@ void Graph::addEdge(int parent_vertex, int child_vertex){
 void Graph::DFS_helper(int s, bool *visitedBool, int goal){
     if(GoalCheck) return;
     std::cout<< "Visiting Node " << s << std::endl;
-    path.push_back(s);
     if (s == goal) {
         GoalCheck = true;
         std::cout << "Found Goal: " << goal << std::endl;
@@ -103,7 +102,9 @@ void Graph::DFS_helper(int s, bool *visitedBool, int goal){
             }
             std::cout<< path.at(i) << " ==> ";
         }
+
     }
+    path.push_back(s);
     visitedBool[s] = true;
     for(auto i = adj[s].begin(); i != adj[s].end(); i++){
         if(GoalCheck) return;
